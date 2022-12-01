@@ -3,10 +3,16 @@ const fs = require("fs");
 fs.readFile("input.txt", (err, data) => {
   if (err) throw err;
 
-  console.log(findMax(data.toString()));
+  //part 1 answer
+  const part1Answer = findGroupValues(data.toString());
+  console.log("Part 1 Answer: ", Math.max(...part1Answer));
+
+  //part 2 answer
+  const part2Answer = findAndSumTopValues(part1Answer, 3);
+  console.log("Part 2 Answer: ", part2Answer);
 });
 
-const findMax = (string) => {
+const findGroupValues = (string) => {
   //string as array including new lines
   const stringAsArray = string.split("\n");
 
@@ -23,5 +29,22 @@ const findMax = (string) => {
     return previousValue;
   }, []);
 
-  return Math.max(...totals);
+  return totals;
+};
+
+const findAndSumTopValues = (groupValues, numberOfValues) => {
+  const groupValueCopy = [...groupValues];
+  const topValues = [];
+  for (let i = 0; i < numberOfValues; i++) {
+    const indexOfCurrentMax = groupValueCopy.indexOf(
+      Math.max(...groupValueCopy)
+    );
+    //push top value to top value array, remove top value from working array
+    topValues.push(groupValueCopy.splice(indexOfCurrentMax, 1)[0]);
+  }
+  //sum values in top value array
+  return topValues.reduce(
+    (previousValue, currentValue) => previousValue + currentValue,
+    0
+  );
 };
