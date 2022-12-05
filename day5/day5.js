@@ -28,15 +28,15 @@ fs.readFile("input.txt", "utf8", (err, data) => {
 
   console.log(
     "\x1b[94m Part 1 Answer: \x1b[0m",
-    part1and2(stacks, input, partId.PART_ONE)
+    part1and2(stacks, input, partIdentifier.PART_ONE)
   );
   console.log(
     "\x1b[96m Part 2 Answer: \x1b[0m",
-    part1and2(stacks, input, partId.PART_TWO)
+    part1and2(stacks, input, partIdentifier.PART_TWO)
   );
 });
 
-const partId = {
+const partIdentifier = {
   PART_ONE: "1",
   PART_TWO: "2",
 };
@@ -47,11 +47,11 @@ const moveCrate = (string, stackArrays, partId) => {
   const moveFrom = parseInt(stringAsArray[3]);
   const moveTo = parseInt(stringAsArray[5]);
 
-  if (partId === "1") {
+  if (partId === partIdentifier.PART_ONE) {
     for (let i = 1; i <= numberToMove; i++) {
       stackArrays[moveTo - 1].unshift(stackArrays[moveFrom - 1].shift());
     }
-  } else if (partId === "2") {
+  } else if (partId === partIdentifier.PART_TWO) {
     stackArrays[moveTo - 1].unshift(
       ...stackArrays[moveFrom - 1].splice(0, numberToMove)
     );
@@ -63,10 +63,10 @@ const part1and2 = (stacks, input, partId) => {
   const stackArrays = stacks.map((e) => e.split(""));
   for (const instruction of input) {
     //part 1 (CrateMover 9000)
-    partId === "1"
-      ? moveCrate(instruction, [...stackArrays], "1")
+    partId === partIdentifier.PART_ONE
+      ? moveCrate(instruction, [...stackArrays], partId)
       : //part 2 (CrateMover 9001)
-        moveCrate(instruction, [...stackArrays], "2");
+        moveCrate(instruction, [...stackArrays], partId);
   }
   for (const stack of stackArrays) {
     topCrates += stack[0];
