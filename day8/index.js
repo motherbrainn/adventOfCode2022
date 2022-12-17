@@ -5,6 +5,7 @@ fs.readFile("input.txt", "utf8", (err, data) => {
 
   const table = buildTable(data);
   console.log("part 1: ", part1(table));
+  console.log("part2: ", part2(table));
 });
 const buildTable = (data) => {
   const table = [];
@@ -84,4 +85,89 @@ const part1 = (table) => {
   }, 0);
 
   return part1Total;
+};
+
+const part2 = (table) => {
+  const scenicScores = [];
+  //loop over every row
+  for (let rowIndex in table) {
+    rowIndex = +rowIndex;
+    //loop over every tree in row
+    for (let treeIndex in table[rowIndex]) {
+      treeIndex = +treeIndex;
+
+      //build arrays to check current tree height against
+      const leftToRight = createSubArrayLeftToRight(treeIndex, table[rowIndex]);
+      const rightToLeft = createSubArrayRightToLeft(treeIndex, table[rowIndex]);
+      const topToBottom = createSubArrayTopToBottom(treeIndex, rowIndex, table);
+      const bottomToTop = createSubArrayBottomToTop(treeIndex, rowIndex, table);
+
+      let scores = [];
+      const currentTreeHeight = table[rowIndex][treeIndex].height;
+
+      scores.push(
+        viewingDistanceForTree(currentTreeHeight, leftToRight),
+        viewingDistanceForTree(currentTreeHeight, rightToLeft),
+        viewingDistanceForTree(currentTreeHeight, topToBottom),
+        viewingDistanceForTree(currentTreeHeight, bottomToTop)
+      );
+
+      //remove 0 values and multiply scores to get scenic score per tree
+      scenicScores.push(
+        scores
+          .filter((e) => e !== 0)
+          .reduce((accumulator, currentValue) => (currentValue *= accumulator))
+      );
+    }
+  }
+  //return highest scenic score
+  return Math.max(...scenicScores);
+};
+
+//functions to create arrays to check current tree against
+const createSubArrayLeftToRight = (startingTreeIndex, row) => {
+  return row.slice(startingTreeIndex + 1);
+};
+
+const createSubArrayRightToLeft = (startingTreeIndex, row) => {
+  let subArray = [];
+  for (let i = startingTreeIndex - 1; i >= 0; i--) {
+    i >= 0 && subArray.push(row[i]);
+  }
+  return subArray;
+};
+
+const createSubArrayTopToBottom = (treeIndex, startingRowIndex, table) => {
+  const maxY = Math.max(...table.map((e, index) => index));
+  let subArray = [];
+  for (let i = startingRowIndex + 1; i < +maxY + 1; i++) {
+    subArray.push(table[i][treeIndex]);
+  }
+  return subArray;
+};
+
+const createSubArrayBottomToTop = (treeIndex, startingRowIndex, table) => {
+  let subArray = [];
+  for (let i = startingRowIndex - 1; i >= 0; i--) {
+    subArray.push(table[i][treeIndex]);
+  }
+  return subArray;
+};
+
+//determine viewing distance for tree and array
+const viewingDistanceForTree = (tree, array) => {
+  //if length is 0 we are are at an edge
+  if (array.length === 0) {
+    return 0;
+  }
+  let score = 0;
+  for (const arrayTree of array) {
+    if (tree > arrayTree.height) {
+      score += 1;
+    } else {
+      score += 1;
+      break;
+    }
+  }
+  return score;
 };
